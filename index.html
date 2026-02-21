@@ -3,110 +3,136 @@
 <head>
 <meta charset="UTF-8" />
 <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-<title>L’échange.</title>
+<title>L’échange</title>
 
 <style>
-  * { margin: 0; padding: 0; box-sizing: border-box; }
+* { margin: 0; padding: 0; box-sizing: border-box; }
 
-  :root{
-    --bg: #4b2f3a;      /* dunkles Aubergine wie Screenshot */
-    --text: #c8e26a;    /* helles Lime/Chartreuse */
-    --curtain: #000000; /* Vorhang schwarz */
-  }
+body {
+  background: #4b2f3a;
+  color: #c8e26a;
+  font-family: "Computer Says No", monospace;
+  height: 100vh;
+  overflow: hidden;
+}
 
-  body{
-    height: 100vh;
-    overflow: hidden;
-    background: var(--bg);
-    color: var(--text);
-    /* Du willst diese Schrift: */
-    font-family: "Computer Says No", monospace;
-  }
+.container {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  height: 100vh;
+  position: relative;
+  text-align: center;
+}
 
-  /* Inhalt liegt HINTER dem Vorhang und ist sofort da */
-  .stage{
-    position: absolute;
-    inset: 0;
-    display: grid;
-    place-items: center;
-    padding: 6vh 6vw;
-  }
+h1 {
+  font-size: clamp(48px, 8vw, 120px);
+  letter-spacing: 0.05em;
+  transition: all 1.5s ease;
+}
 
-  .title{
-    font-size: clamp(44px, 7vw, 96px);
-    letter-spacing: 0.04em;
-    font-weight: 400;
-    line-height: 1;
-    /* Pixel-Schriften wirken oft besser ohne Glättung */
-    -webkit-font-smoothing: none;
-    -moz-osx-font-smoothing: auto;
-    text-rendering: geometricPrecision;
-    user-select: none;
-  }
+.title-small {
+  transform: translateY(-60px) scale(0.7);
+}
 
-  /* Vorhang */
-  .curtain{
-    position: fixed;
-    inset: 0;
-    display: flex;
-    z-index: 10;
-    pointer-events: none;
-    background: transparent;
-  }
+.form {
+  margin-top: 20px;
+  opacity: 0;
+  transform: translateY(30px);
+  transition: all 1s ease;
+}
 
-  .panel{
-    width: 50%;
-    height: 100%;
-    background: var(--curtain);
-    /* 10 Sekunden, schwer & elegant */
-    transition: transform 10s cubic-bezier(.8,0,.2,1);
-  }
+.form.show {
+  opacity: 1;
+  transform: translateY(0);
+}
 
-  .left{  transform-origin: left; }
-  .right{ transform-origin: right; }
+input, textarea {
+  background: transparent;
+  border: 1px solid #c8e26a;
+  color: #c8e26a;
+  padding: 10px;
+  margin: 8px 0;
+  width: 250px;
+  font-family: inherit;
+}
 
-  .open .left{
-    transform: perspective(1400px) rotateY(-110deg);
-  }
-  .open .right{
-    transform: perspective(1400px) rotateY(110deg);
-  }
+button {
+  background: #c8e26a;
+  color: #4b2f3a;
+  border: none;
+  padding: 10px 20px;
+  cursor: pointer;
+  margin-top: 10px;
+  font-family: inherit;
+}
 
-  /* Optional: ganz leichter „Spalt“ (kannst du auskommentieren) */
-  .seam{
-    position: fixed;
-    left: 50%;
-    top: 0;
-    width: 1px;
-    height: 100%;
-    background: rgba(255,255,255,0.06);
-    z-index: 11;
-    pointer-events: none;
-  }
+/* Curtain */
+.curtain {
+  position: fixed;
+  inset: 0;
+  display: flex;
+  z-index: 10;
+}
+
+.panel {
+  width: 50%;
+  height: 100%;
+  background: black;
+  transition: transform 10s cubic-bezier(.8,0,.2,1);
+}
+
+.left { transform-origin: left; }
+.right { transform-origin: right; }
+
+.open .left {
+  transform: perspective(1400px) rotateY(-110deg);
+}
+
+.open .right {
+  transform: perspective(1400px) rotateY(110deg);
+}
 </style>
 </head>
 
 <body>
 
-  <main class="stage" aria-label="L’échange landing">
-    <h1 class="title">L’échange.</h1>
-  </main>
+<div class="container">
+  <h1 id="title">L'échange</h1>
 
-  <div class="curtain" id="curtain" aria-hidden="true">
-    <div class="panel left"></div>
-    <div class="panel right"></div>
+  <div class="form" id="contactForm">
+    <input type="text" placeholder="Name"><br>
+    <input type="email" placeholder="Email"><br>
+    <textarea rows="4" placeholder="Message"></textarea><br>
+    <button>Send</button>
   </div>
+</div>
 
-  <!-- Optionaler Mittelspalt -->
-  <div class="seam" aria-hidden="true"></div>
+<div class="curtain" id="curtain">
+  <div class="panel left"></div>
+  <div class="panel right"></div>
+</div>
 
 <script>
-  window.addEventListener("load", () => {
-    // kleiner Moment Ruhe, dann öffnet sich der Vorhang
-    setTimeout(() => {
-      document.getElementById("curtain").classList.add("open");
-    }, 600);
-  });
+window.addEventListener("load", () => {
+
+  // Curtain opens
+  setTimeout(() => {
+    document.getElementById("curtain").classList.add("open");
+  }, 600);
+
+  // After curtain fully open
+  setTimeout(() => {
+    document.getElementById("title").classList.add("title-small");
+  }, 11500);
+
+  // Show form
+  setTimeout(() => {
+    document.getElementById("contactForm").classList.add("show");
+  }, 13000);
+
+});
 </script>
 
 </body>
