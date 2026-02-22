@@ -19,6 +19,7 @@
   --ease:cubic-bezier(.8,0,.2,1);
 }
 
+/* ===== Base ===== */
 html, body { height:100%; }
 body{
   font-family:"Computer Says No", monospace;
@@ -27,7 +28,7 @@ body{
   background:#000;
 }
 
-/* Background */
+/* ===== Background (never blocks taps) ===== */
 .background{
   position:fixed;
   inset:0;
@@ -38,7 +39,7 @@ body{
     url("img-6126.jpg") center / cover no-repeat;
 }
 
-/* Stage */
+/* ===== Stage centered WITHOUT transform (iOS-safe) ===== */
 .stage{
   position:relative;
   z-index:2;
@@ -48,6 +49,7 @@ body{
   padding:24px;
 }
 
+/* Wrapper content */
 .wrapper{
   width:min(560px, calc(100vw - 48px));
   text-align:center;
@@ -61,6 +63,8 @@ h1{
   margin-bottom:20px;
   transition:transform 1.6s var(--ease);
 }
+
+/* Drift up */
 .title-up{
   transform: translateY(-40px);
 }
@@ -90,7 +94,7 @@ input, textarea{
   color:var(--text);
   padding:14px;
   font-family:"Computer Says No", monospace;
-  font-size:18px;
+  font-size:18px; /* iOS zoom vermeiden */
   line-height:1.2;
 }
 textarea{ resize:none; }
@@ -106,7 +110,7 @@ button{
   cursor:pointer;
 }
 
-/* Final */
+/* Final screen */
 .final{
   position:fixed;
   inset:0;
@@ -184,10 +188,6 @@ const wrapper = document.getElementById("wrapper");
 const finalScreen = document.getElementById("final");
 const submitBtn = document.getElementById("submitBtn");
 
-/* ✅ Nur Timing geändert */
-const AFTER_CURTAIN_PAUSE = 250;    // war 600 — Titel driftet früher
-const FORM_AFTER_TITLE_DELAY = 350; // war 800 — Formular kommt früher nach Drift
-
 window.addEventListener("load", () => {
   setTimeout(() => curtain.classList.add("open"), 200);
 
@@ -195,15 +195,17 @@ window.addEventListener("load", () => {
     curtain.remove();
 
     setTimeout(() => {
+      // Titel driftet hoch
       title.classList.add("title-up");
 
+      // dann Formular
       setTimeout(() => {
         form.classList.add("show");
-      }, FORM_AFTER_TITLE_DELAY);
+      }, 800);
 
-    }, AFTER_CURTAIN_PAUSE);
+    }, 600);
 
-  }, 3700); // 200ms + 3.5s
+  }, 3700);
 });
 
 form.addEventListener("submit", async (event) => {
