@@ -11,15 +11,15 @@
   src: url("computer-says-no.otf") format("opentype");
 }
 
-* { margin: 0; padding: 0; box-sizing: border-box; }
+* { margin:0; padding:0; box-sizing:border-box; }
 
 :root{
   --text:#c8e26a;
   --curtain:#000;
-  --curtain-duration:3.5s;
   --ease:cubic-bezier(.8,0,.2,1);
 }
 
+/* ================= BODY ================= */
 body{
   font-family:"Computer Says No", monospace;
   height:100vh;
@@ -28,14 +28,13 @@ body{
 }
 
 /* ================= BACKGROUND ================= */
-body::before{
-  content:"";
+.background{
   position:fixed;
   inset:0;
+  z-index:0;
   background:
     linear-gradient(rgba(0,0,0,0.55), rgba(0,0,0,0.55)),
     url("img-6126.jpg") center center / cover no-repeat;
-  z-index:-2;
 }
 
 /* ================= WRAPPER ================= */
@@ -43,20 +42,20 @@ body::before{
   position:absolute;
   top:50%;
   left:50%;
-  transform:translate(-50%, -50%);
+  transform:translate(-50%,-50%);
   display:flex;
   flex-direction:column;
   align-items:center;
-  text-align:center;
   width:min(560px, calc(100vw - 48px));
-  transition:transform 1.6s var(--ease), opacity 1.2s ease;
+  z-index:2; /* garantiert über Hintergrund */
+  transition:opacity 1.2s ease;
 }
 
 /* ================= TITLE ================= */
 h1{
   font-size:clamp(64px, 10vw, 160px);
-  letter-spacing:0.05em;
   margin-bottom:20px;
+  letter-spacing:0.05em;
   transition:transform 1.6s var(--ease);
 }
 
@@ -72,14 +71,12 @@ form{
   width:100%;
   opacity:0;
   transform:translateY(10px);
-  pointer-events:none;
   transition:opacity 1s ease, transform 1s ease;
 }
 
 form.show{
   opacity:1;
   transform:translateY(0);
-  pointer-events:auto;
 }
 
 input, textarea{
@@ -88,8 +85,8 @@ input, textarea{
   border:1px solid var(--text);
   color:var(--text);
   padding:14px;
-  font-family:"Computer Says No", monospace;
   font-size:18px;
+  font-family:"Computer Says No", monospace;
 }
 
 textarea{ resize:none; }
@@ -100,8 +97,8 @@ button{
   color:black;
   border:none;
   padding:14px;
-  font-family:"Computer Says No", monospace;
   font-size:18px;
+  font-family:"Computer Says No", monospace;
   cursor:pointer;
 }
 
@@ -113,6 +110,7 @@ button{
   place-items:center;
   opacity:0;
   transition:opacity 1.2s ease;
+  z-index:2;
 }
 
 .final.show{ opacity:1; }
@@ -127,14 +125,14 @@ button{
   inset:0;
   display:flex;
   z-index:10;
-  pointer-events:none;
+  pointer-events:none; /* wichtig */
 }
 
 .panel{
   width:50%;
   height:100%;
   background:var(--curtain);
-  transition:transform var(--curtain-duration) var(--ease);
+  transition:transform 3.5s var(--ease);
 }
 
 .left{transform-origin:left;}
@@ -142,11 +140,12 @@ button{
 
 .open .left{transform:perspective(1400px) rotateY(-110deg);}
 .open .right{transform:perspective(1400px) rotateY(110deg);}
-
 </style>
 </head>
 
 <body>
+
+<div class="background"></div>
 
 <div class="wrapper" id="wrapper">
   <h1 id="title">L’échange.</h1>
@@ -170,7 +169,6 @@ button{
 </div>
 
 <script>
-
 const curtain = document.getElementById("curtain");
 const title = document.getElementById("title");
 const form = document.getElementById("contactForm");
@@ -216,7 +214,6 @@ form.addEventListener("submit", async (event) => {
     },1200);
   }
 });
-
 </script>
 
 </body>
