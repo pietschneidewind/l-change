@@ -14,7 +14,6 @@
 * { margin: 0; padding: 0; box-sizing: border-box; }
 
 :root{
-  --bg:#4b2f3a;
   --text:#c8e26a;
   --curtain:#000;
   --curtain-duration:3.5s;
@@ -22,14 +21,24 @@
 }
 
 body{
-  background:var(--bg);
-  color:var(--text);
   font-family:"Computer Says No", monospace;
   height:100vh;
   overflow:hidden;
+  color:var(--text);
 }
 
-/* ================= CENTER WRAPPER ================= */
+/* ================= BACKGROUND ================= */
+body::before{
+  content:"";
+  position:fixed;
+  inset:0;
+  background:
+    linear-gradient(rgba(0,0,0,0.55), rgba(0,0,0,0.55)),
+    url("img-6126.jpg") center center / cover no-repeat;
+  z-index:-2;
+}
+
+/* ================= WRAPPER ================= */
 .wrapper{
   position:absolute;
   top:50%;
@@ -47,11 +56,10 @@ body{
 h1{
   font-size:clamp(64px, 10vw, 160px);
   letter-spacing:0.05em;
-  margin-bottom:18px; /* Abstand über Formular */
+  margin-bottom:20px;
   transition:transform 1.6s var(--ease);
 }
 
-/* Drift nach oben */
 .title-up{
   transform:translateY(-40px);
 }
@@ -76,7 +84,7 @@ form.show{
 
 input, textarea{
   width:100%;
-  background:transparent;
+  background:rgba(0,0,0,0.5);
   border:1px solid var(--text);
   color:var(--text);
   padding:14px;
@@ -89,7 +97,7 @@ textarea{ resize:none; }
 button{
   width:100%;
   background:var(--text);
-  color:var(--bg);
+  color:black;
   border:none;
   padding:14px;
   font-family:"Computer Says No", monospace;
