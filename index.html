@@ -25,6 +25,7 @@ body{
   height:100vh;
   overflow:hidden;
   color:var(--text);
+  background:#000; /* fallback */
 }
 
 /* ================= BACKGROUND ================= */
@@ -32,6 +33,7 @@ body{
   position:fixed;
   inset:0;
   z-index:0;
+  pointer-events:none; /* ✅ SUPER WICHTIG: blockiert keine Klicks */
   background:
     linear-gradient(rgba(0,0,0,0.55), rgba(0,0,0,0.55)),
     url("img-6126.jpg") center center / cover no-repeat;
@@ -47,7 +49,7 @@ body{
   flex-direction:column;
   align-items:center;
   width:min(560px, calc(100vw - 48px));
-  z-index:2; /* garantiert über Hintergrund */
+  z-index:2;
   transition:opacity 1.2s ease;
 }
 
@@ -72,11 +74,14 @@ form{
   opacity:0;
   transform:translateY(10px);
   transition:opacity 1s ease, transform 1s ease;
+
+  pointer-events:none; /* ✅ solange verborgen */
 }
 
 form.show{
   opacity:1;
   transform:translateY(0);
+  pointer-events:auto; /* ✅ sobald sichtbar */
 }
 
 input, textarea{
@@ -85,7 +90,7 @@ input, textarea{
   border:1px solid var(--text);
   color:var(--text);
   padding:14px;
-  font-size:18px;
+  font-size:18px; /* iOS zoom vermeiden */
   font-family:"Computer Says No", monospace;
 }
 
@@ -117,6 +122,7 @@ button{
 
 .final p{
   font-size:clamp(32px,6vw,80px);
+  letter-spacing:0.04em;
 }
 
 /* ================= CURTAIN ================= */
@@ -125,7 +131,7 @@ button{
   inset:0;
   display:flex;
   z-index:10;
-  pointer-events:none; /* wichtig */
+  pointer-events:none;
 }
 
 .panel{
@@ -145,7 +151,7 @@ button{
 
 <body>
 
-<div class="background"></div>
+<div class="background" aria-hidden="true"></div>
 
 <div class="wrapper" id="wrapper">
   <h1 id="title">L’échange.</h1>
@@ -163,7 +169,7 @@ button{
   <p>See you at the table.</p>
 </div>
 
-<div class="curtain" id="curtain">
+<div class="curtain" id="curtain" aria-hidden="true">
   <div class="panel left"></div>
   <div class="panel right"></div>
 </div>
@@ -176,7 +182,6 @@ const wrapper = document.getElementById("wrapper");
 const finalScreen = document.getElementById("final");
 
 window.addEventListener("load", () => {
-
   setTimeout(() => curtain.classList.add("open"), 200);
 
   setTimeout(() => {
@@ -192,7 +197,6 @@ window.addEventListener("load", () => {
     }, 600);
 
   }, 3700);
-
 });
 
 form.addEventListener("submit", async (event) => {
