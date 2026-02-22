@@ -19,7 +19,7 @@
   --ease:cubic-bezier(.8,0,.2,1);
 }
 
-/* ===== base ===== */
+/* base */
 html, body { height:100%; }
 body{
   font-family:"computer says no", monospace;
@@ -28,7 +28,7 @@ body{
   background:#000;
 }
 
-/* ===== background (never blocks taps) ===== */
+/* background (never blocks taps) */
 .background{
   position:fixed;
   inset:0;
@@ -39,7 +39,7 @@ body{
     url("img-6126.jpg") center / cover no-repeat;
 }
 
-/* ===== stage centered without transform (ios-safe) ===== */
+/* stage centered without transform (ios-safe) */
 .stage{
   position:relative;
   z-index:2;
@@ -182,24 +182,24 @@ button{
 </div>
 
 <script>
-const curtain = document.getelementbyid("curtain");
-const title = document.getelementbyid("title");
-const form = document.getelementbyid("contactform");
-const wrapper = document.getelementbyid("wrapper");
-const finalscreen = document.getelementbyid("final");
-const submitbtn = document.getelementbyid("submitbtn");
+const curtain = document.getElementById("curtain");
+const title = document.getElementById("title");
+const form = document.getElementById("contactform");
+const wrapper = document.getElementById("wrapper");
+const finalscreen = document.getElementById("final");
+const submitbtn = document.getElementById("submitbtn");
 
-window.addeventlistener("load", () => {
-  settimeout(() => curtain.classlist.add("open"), 200);
+window.addEventListener("load", () => {
+  setTimeout(() => curtain.classList.add("open"), 200);
 
-  settimeout(() => {
+  setTimeout(() => {
     curtain.remove();
 
-    settimeout(() => {
-      title.classlist.add("title-up");
+    setTimeout(() => {
+      title.classList.add("title-up");
 
-      settimeout(() => {
-        form.classlist.add("show");
+      setTimeout(() => {
+        form.classList.add("show");
       }, 800);
 
     }, 600);
@@ -207,12 +207,12 @@ window.addeventlistener("load", () => {
   }, 3700);
 });
 
-form.addeventlistener("submit", async (event) => {
-  event.preventdefault();
+form.addEventListener("submit", async (event) => {
+  event.preventDefault();
   submitbtn.disabled = true;
 
   try{
-    const data = new formdata(form);
+    const data = new FormData(form);
     const response = await fetch(form.action, {
       method: "post",
       body: data,
@@ -222,7 +222,7 @@ form.addeventlistener("submit", async (event) => {
     if(response.ok){
       form.reset();
       wrapper.style.opacity = "0";
-      settimeout(() => finalscreen.classlist.add("show"), 1200);
+      setTimeout(() => finalscreen.classList.add("show"), 1200);
     } else {
       submitbtn.disabled = false;
     }
