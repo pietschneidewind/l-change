@@ -6,12 +6,11 @@
 <title>L’échange.</title>
 
 <style>
+
 /* ================= FONT ================= */
 @font-face {
   font-family: "Computer Says No";
   src: url("computer-says-no.otf") format("opentype");
-  font-weight: normal;
-  font-style: normal;
 }
 
 /* ================= RESET ================= */
@@ -22,10 +21,8 @@
   --bg: #4b2f3a;
   --text: #c8e26a;
   --curtain: #000;
-
-  /* Timing */
-  --curtain-duration: 4s;
-  --ease-heavy: cubic-bezier(.8,0,.2,1);
+  --curtain-duration: 3.5s;
+  --ease: cubic-bezier(.8,0,.2,1);
 }
 
 /* ================= BODY ================= */
@@ -37,72 +34,43 @@ body{
   overflow: hidden;
 }
 
-/* ================= STAGE ================= */
-.stage{
-  position: relative;
-  height: 100vh;
-  width: 100%;
-}
-
-/* Main content block */
-.container{
-  position: absolute;
-  inset: 0;
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-
-  /* (1) echte optische Mitte: leicht nach oben schieben */
-  justify-content: center;
-  transform: translateY(-1.5vh);
-
-  text-align: center;
-  padding: 20px;
-  transition: opacity 1.2s ease;
-}
-
-.container.fade-out{
-  opacity: 0;
-}
-
 /* ================= TITLE ================= */
-h1{
-  font-size: clamp(48px, 8vw, 120px);
+/* EXAKT zentriert */
+.title{
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  font-size: clamp(64px, 10vw, 160px);
   letter-spacing: 0.05em;
-  line-height: 1;
-  margin: 0;
-
-  transform: translateY(0) scale(1);
-  transition: transform 1.5s var(--ease-heavy);
+  text-align: center;
+  transition: transform 1.6s var(--ease);
 }
 
-/* (2) Title wandert hoch, Form kommt */
+/* Drift nach oben */
 .title-up{
-  transform: translateY(-90px) scale(0.78);
+  transform: translate(-50%, -130%);
 }
 
 /* ================= FORM ================= */
+.form-wrapper{
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -10%);
+  width: min(560px, calc(100vw - 48px));
+  opacity: 0;
+  transition: opacity 1s ease;
+}
+
+.form-wrapper.show{
+  opacity: 1;
+}
+
 form{
   display: flex;
   flex-direction: column;
-
-  /* (2) weniger Abstand */
   gap: 12px;
-  margin-top: 12px; /* war zu groß */
-
-  /* (3) iPhone: volle Breite, aber mit gutem Rand */
-  width: min(560px, calc(100vw - 48px));
-
-  opacity: 0;
-  transform: translateY(16px);
-  pointer-events: none;
-  transition: opacity 1s ease, transform 1s ease;
-}
-
-form.show{
-  opacity: 1;
-  transform: translateY(0);
-  pointer-events: auto;
 }
 
 input, textarea{
@@ -110,34 +78,21 @@ input, textarea{
   background: transparent;
   border: 1px solid var(--text);
   color: var(--text);
-  padding: 12px 12px;
+  padding: 14px;
   font-family: "Computer Says No", monospace;
   font-size: 18px;
-  line-height: 1.2;
 }
 
-/* iOS Zoom vermeiden: mind. 16px Font */
-input, textarea, button{
-  font-size: 18px;
-}
-
-textarea{
-  resize: none;
-}
-
-input::placeholder, textarea::placeholder{
-  color: var(--text);
-  opacity: 0.7;
-}
+textarea{ resize: none; }
 
 button{
-  width: 100%;
   background: var(--text);
   color: var(--bg);
   border: none;
-  padding: 12px;
+  padding: 14px;
   cursor: pointer;
   font-family: "Computer Says No", monospace;
+  font-size: 18px;
 }
 
 /* ================= FINAL MESSAGE ================= */
@@ -147,22 +102,16 @@ button{
   display: grid;
   place-items: center;
   text-align: center;
-  padding: 20px;
-
   opacity: 0;
-  pointer-events: none;
   transition: opacity 1.2s ease;
 }
 
 .final.show{
   opacity: 1;
-  pointer-events: auto;
 }
 
 .final p{
-  font-size: clamp(28px, 4vw, 64px);
-  letter-spacing: 0.04em;
-  line-height: 1.05;
+  font-size: clamp(32px, 6vw, 80px);
 }
 
 /* ================= CURTAIN ================= */
@@ -178,7 +127,7 @@ button{
   width: 50%;
   height: 100%;
   background: var(--curtain);
-  transition: transform var(--curtain-duration) var(--ease-heavy);
+  transition: transform var(--curtain-duration) var(--ease);
 }
 
 .left{ transform-origin: left; }
@@ -186,98 +135,93 @@ button{
 
 .open .left{ transform: perspective(1400px) rotateY(-110deg); }
 .open .right{ transform: perspective(1400px) rotateY(110deg); }
+
 </style>
 </head>
 
 <body>
-<div class="stage">
 
-  <div class="container" id="container">
-    <h1 id="title">L’échange.</h1>
+<h1 class="title" id="title">L’échange.</h1>
 
-    <form id="contactForm" action="https://formspree.io/f/maqdpkgb" method="POST">
-      <input type="text" name="name" placeholder="Name" required>
-      <input type="tel" name="phone" placeholder="Phone" required>
-      <input type="email" name="email" placeholder="Mail" required>
-      <textarea name="drive" rows="4" placeholder="What drives you in life?" required></textarea>
-      <button type="submit" id="submitBtn">Send</button>
-    </form>
-  </div>
+<div class="form-wrapper" id="formWrapper">
+  <form id="contactForm" action="https://formspree.io/f/maqdpkgb" method="POST">
+    <input type="text" name="name" placeholder="Name" required>
+    <input type="tel" name="phone" placeholder="Phone" required>
+    <input type="email" name="email" placeholder="Mail" required>
+    <textarea name="drive" rows="4" placeholder="What drives you in life?" required></textarea>
+    <button type="submit">Send</button>
+  </form>
+</div>
 
-  <div class="final" id="final">
-    <p>See you at the table.</p>
-  </div>
+<div class="final" id="final">
+  <p>See you at the table.</p>
+</div>
 
-  <div class="curtain" id="curtain" aria-hidden="true">
-    <div class="panel left"></div>
-    <div class="panel right"></div>
-  </div>
-
+<div class="curtain" id="curtain">
+  <div class="panel left"></div>
+  <div class="panel right"></div>
 </div>
 
 <script>
+
 const curtain = document.getElementById("curtain");
 const title = document.getElementById("title");
+const formWrapper = document.getElementById("formWrapper");
 const form = document.getElementById("contactForm");
-const container = document.getElementById("container");
 const finalScreen = document.getElementById("final");
 
-const CURTAIN_START_DELAY = 250;
-const CURTAIN_DURATION_MS = 4000; // muss zu --curtain-duration passen
-const AFTER_OPEN_PAUSE = 650;
-const TITLE_MOVE_DURATION_BUFFER = 1600; // CSS 1.5s + Puffer
-const FORM_SHOW_DELAY_AFTER_TITLE = 120;
+const CURTAIN_DELAY = 200;
+const CURTAIN_DURATION = 3500;
 
 window.addEventListener("load", () => {
+
   setTimeout(() => {
     curtain.classList.add("open");
-  }, CURTAIN_START_DELAY);
-
-  const openCompleteAt = CURTAIN_START_DELAY + CURTAIN_DURATION_MS;
+  }, CURTAIN_DELAY);
 
   setTimeout(() => {
     curtain.remove();
 
+    // Titel driftet nach oben
     setTimeout(() => {
       title.classList.add("title-up");
 
+      // Dann Formular einblenden
       setTimeout(() => {
-        form.classList.add("show");
-      }, TITLE_MOVE_DURATION_BUFFER + FORM_SHOW_DELAY_AFTER_TITLE);
+        formWrapper.classList.add("show");
+      }, 900);
 
-    }, AFTER_OPEN_PAUSE);
+    }, 600);
 
-  }, openCompleteAt + 120);
+  }, CURTAIN_DELAY + CURTAIN_DURATION);
+
 });
 
 form.addEventListener("submit", async (event) => {
   event.preventDefault();
-  const submitBtn = document.getElementById("submitBtn");
-  submitBtn.disabled = true;
 
-  try {
-    const data = new FormData(form);
-    const response = await fetch(form.action, {
-      method: "POST",
-      body: data,
-      headers: { "Accept": "application/json" }
-    });
+  const data = new FormData(form);
+  const response = await fetch(form.action, {
+    method: "POST",
+    body: data,
+    headers: { "Accept": "application/json" }
+  });
 
-    if (!response.ok) {
-      submitBtn.disabled = false;
-      return;
-    }
-
+  if (response.ok) {
     form.reset();
-    container.classList.add("fade-out");
+    title.style.opacity = "0";
+    formWrapper.style.opacity = "0";
 
     setTimeout(() => {
       finalScreen.classList.add("show");
     }, 1200);
-
-  } catch (e) {
-    submitBtn.disabled = false;
   }
+});
+
+</script>
+
+</body>
+</html>
 });
 </script>
 </body>
