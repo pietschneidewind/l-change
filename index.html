@@ -6,14 +6,30 @@
 <title>L’échange.</title>
 
 <style>
-* { margin: 0; padding: 0; box-sizing: border-box; }
 
+/* ================= FONT ================= */
+@font-face {
+  font-family: "Computer Says No";
+  src: url("computer-says-no.otf") format("opentype");
+  font-weight: normal;
+  font-style: normal;
+}
+
+/* ================= RESET ================= */
+* {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+}
+
+/* ================= VARIABLES ================= */
 :root {
   --bg: #4b2f3a;
   --text: #c8e26a;
   --curtain: #000;
 }
 
+/* ================= BODY ================= */
 body {
   background: var(--bg);
   color: var(--text);
@@ -22,6 +38,7 @@ body {
   overflow: hidden;
 }
 
+/* ================= LAYOUT ================= */
 .container {
   display: flex;
   flex-direction: column;
@@ -32,13 +49,14 @@ body {
   padding: 20px;
 }
 
+/* ================= TITLE ================= */
 h1 {
   font-size: clamp(48px, 8vw, 120px);
   letter-spacing: 0.05em;
   margin-bottom: 40px;
 }
 
-/* Form styling */
+/* ================= FORM ================= */
 form {
   display: flex;
   flex-direction: column;
@@ -51,7 +69,7 @@ input, textarea {
   border: 1px solid var(--text);
   color: var(--text);
   padding: 10px;
-  font-family: inherit;
+  font-family: "Computer Says No", monospace;
 }
 
 input::placeholder,
@@ -66,27 +84,27 @@ button {
   border: none;
   padding: 10px;
   cursor: pointer;
-  font-family: inherit;
+  font-family: "Computer Says No", monospace;
 }
 
+/* ================= SUCCESS / ERROR ================= */
 .success, .error {
   margin-top: 20px;
   opacity: 0;
   transition: opacity 0.6s ease;
 }
 
-.success.show, .error.show {
+.success.show,
+.error.show {
   opacity: 1;
 }
 
-/* Curtain */
+/* ================= CURTAIN ================= */
 .curtain {
   position: fixed;
   inset: 0;
   display: flex;
   z-index: 10;
-
-  /* ✅ WICHTIG: sonst blockiert das Overlay die Klicks */
   pointer-events: none;
 }
 
@@ -100,8 +118,14 @@ button {
 .left { transform-origin: left; }
 .right { transform-origin: right; }
 
-.open .left { transform: perspective(1400px) rotateY(-110deg); }
-.open .right { transform: perspective(1400px) rotateY(110deg); }
+.open .left {
+  transform: perspective(1400px) rotateY(-110deg);
+}
+
+.open .right {
+  transform: perspective(1400px) rotateY(110deg);
+}
+
 </style>
 </head>
 
@@ -119,15 +143,17 @@ button {
   </form>
 
   <div class="success" id="successMessage">Merci.</div>
-  <div class="error" id="errorMessage">Something went wrong. Please try again.</div>
+  <div class="error" id="errorMessage">Something went wrong.</div>
 </div>
 
-<div class="curtain" id="curtain" aria-hidden="true">
+<div class="curtain" id="curtain">
   <div class="panel left"></div>
   <div class="panel right"></div>
 </div>
 
 <script>
+
+/* ================= CURTAIN OPEN ================= */
 window.addEventListener("load", () => {
   const curtain = document.getElementById("curtain");
 
@@ -135,23 +161,25 @@ window.addEventListener("load", () => {
     curtain.classList.add("open");
   }, 600);
 
-  // optional: nach dem Öffnen komplett entfernen (sauber)
   setTimeout(() => {
     curtain.remove();
-  }, 600 + 10000 + 300);
+  }, 10600);
 });
 
+/* ================= FORM HANDLING ================= */
 const form = document.getElementById("contactForm");
 const successMessage = document.getElementById("successMessage");
 const errorMessage = document.getElementById("errorMessage");
 
 form.addEventListener("submit", async (event) => {
   event.preventDefault();
+
   successMessage.classList.remove("show");
   errorMessage.classList.remove("show");
 
   try {
     const data = new FormData(form);
+
     const response = await fetch(form.action, {
       method: "POST",
       body: data,
@@ -164,10 +192,11 @@ form.addEventListener("submit", async (event) => {
     } else {
       errorMessage.classList.add("show");
     }
-  } catch (e) {
+  } catch (error) {
     errorMessage.classList.add("show");
   }
 });
+
 </script>
 
 </body>
