@@ -1,13 +1,13 @@
-<!DOCTYPE html>
+<!doctype html>
 <html lang="fr">
 <head>
-<meta charset="UTF-8" />
+<meta charset="utf-8" />
 <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-<title>L’échange.</title>
+<title>l’échange.</title>
 
 <style>
 @font-face{
-  font-family: "Computer Says No";
+  font-family: "computer says no";
   src: url("computer-says-no.otf") format("opentype");
 }
 
@@ -19,16 +19,16 @@
   --ease:cubic-bezier(.8,0,.2,1);
 }
 
-/* ===== Base ===== */
+/* ===== base ===== */
 html, body { height:100%; }
 body{
-  font-family:"Computer Says No", monospace;
+  font-family:"computer says no", monospace;
   color:var(--text);
   overflow:hidden;
   background:#000;
 }
 
-/* ===== Background (never blocks taps) ===== */
+/* ===== background (never blocks taps) ===== */
 .background{
   position:fixed;
   inset:0;
@@ -39,7 +39,7 @@ body{
     url("img-6126.jpg") center / cover no-repeat;
 }
 
-/* ===== Stage centered WITHOUT transform (iOS-safe) ===== */
+/* ===== stage centered without transform (ios-safe) ===== */
 .stage{
   position:relative;
   z-index:2;
@@ -49,14 +49,14 @@ body{
   padding:24px;
 }
 
-/* Wrapper content */
+/* wrapper content */
 .wrapper{
   width:min(560px, calc(100vw - 48px));
   text-align:center;
   transition:opacity 1.2s ease;
 }
 
-/* Title */
+/* title */
 h1{
   font-size:clamp(64px, 10vw, 160px);
   letter-spacing:0.05em;
@@ -64,12 +64,12 @@ h1{
   transition:transform 1.6s var(--ease);
 }
 
-/* Drift up */
+/* drift up */
 .title-up{
-  transform: translateY(-40px);
+  transform: translatey(-40px);
 }
 
-/* Form */
+/* form */
 form{
   width:100%;
   display:flex;
@@ -77,13 +77,13 @@ form{
   gap:12px;
 
   opacity:0;
-  transform:translateY(10px);
+  transform:translatey(10px);
   pointer-events:none;
   transition:opacity 1s ease, transform 1s ease;
 }
 form.show{
   opacity:1;
-  transform:translateY(0);
+  transform:translatey(0);
   pointer-events:auto;
 }
 
@@ -93,8 +93,8 @@ input, textarea{
   border:1px solid var(--text);
   color:var(--text);
   padding:14px;
-  font-family:"Computer Says No", monospace;
-  font-size:18px; /* iOS zoom vermeiden */
+  font-family:"computer says no", monospace;
+  font-size:18px; /* ios zoom vermeiden */
   line-height:1.2;
 }
 textarea{ resize:none; }
@@ -105,12 +105,12 @@ button{
   color:#000;
   border:none;
   padding:14px;
-  font-family:"Computer Says No", monospace;
+  font-family:"computer says no", monospace;
   font-size:18px;
   cursor:pointer;
 }
 
-/* Final screen */
+/* final screen */
 .final{
   position:fixed;
   inset:0;
@@ -132,7 +132,7 @@ button{
   letter-spacing:0.04em;
 }
 
-/* Curtain */
+/* curtain */
 .curtain{
   position:fixed;
   inset:0;
@@ -148,8 +148,8 @@ button{
 }
 .left{transform-origin:left;}
 .right{transform-origin:right;}
-.open .left{transform:perspective(1400px) rotateY(-110deg);}
-.open .right{transform:perspective(1400px) rotateY(110deg);}
+.open .left{transform:perspective(1400px) rotatey(-110deg);}
+.open .right{transform:perspective(1400px) rotatey(110deg);}
 </style>
 </head>
 
@@ -159,20 +159,21 @@ button{
 
 <div class="stage">
   <div class="wrapper" id="wrapper">
-    <h1 id="title">L’échange.</h1>
+    <h1 id="title">l’échange.</h1>
 
-    <form id="contactForm" action="https://formspree.io/f/maqdpkgb" method="POST">
-      <input type="text" name="name" placeholder="Name" required>
-      <input type="tel" name="phone" placeholder="Phone" required>
-      <input type="email" name="email" placeholder="Mail" required>
-      <textarea name="drive" rows="4" placeholder="What drives you in life?" required></textarea>
-      <button type="submit" id="submitBtn">Send</button>
+    <form id="contactform" action="https://formspree.io/f/maqdpkgb" method="post">
+      <input type="text" name="name" placeholder="name" required>
+      <input type="tel" name="phone" placeholder="phone" required>
+      <input type="email" name="email" placeholder="mail" required>
+      <input type="text" name="place_of_residence" placeholder="place of residence" required>
+      <textarea name="drive" rows="4" placeholder="what drives you in life?" required></textarea>
+      <button type="submit" id="submitbtn">send</button>
     </form>
   </div>
 </div>
 
 <div class="final" id="final">
-  <p>See you at the table.</p>
+  <p>see you at the table.</p>
 </div>
 
 <div class="curtain" id="curtain" aria-hidden="true">
@@ -181,26 +182,24 @@ button{
 </div>
 
 <script>
-const curtain = document.getElementById("curtain");
-const title = document.getElementById("title");
-const form = document.getElementById("contactForm");
-const wrapper = document.getElementById("wrapper");
-const finalScreen = document.getElementById("final");
-const submitBtn = document.getElementById("submitBtn");
+const curtain = document.getelementbyid("curtain");
+const title = document.getelementbyid("title");
+const form = document.getelementbyid("contactform");
+const wrapper = document.getelementbyid("wrapper");
+const finalscreen = document.getelementbyid("final");
+const submitbtn = document.getelementbyid("submitbtn");
 
-window.addEventListener("load", () => {
-  setTimeout(() => curtain.classList.add("open"), 200);
+window.addeventlistener("load", () => {
+  settimeout(() => curtain.classlist.add("open"), 200);
 
-  setTimeout(() => {
+  settimeout(() => {
     curtain.remove();
 
-    setTimeout(() => {
-      // Titel driftet hoch
-      title.classList.add("title-up");
+    settimeout(() => {
+      title.classlist.add("title-up");
 
-      // dann Formular
-      setTimeout(() => {
-        form.classList.add("show");
+      settimeout(() => {
+        form.classlist.add("show");
       }, 800);
 
     }, 600);
@@ -208,27 +207,27 @@ window.addEventListener("load", () => {
   }, 3700);
 });
 
-form.addEventListener("submit", async (event) => {
-  event.preventDefault();
-  submitBtn.disabled = true;
+form.addeventlistener("submit", async (event) => {
+  event.preventdefault();
+  submitbtn.disabled = true;
 
   try{
-    const data = new FormData(form);
+    const data = new formdata(form);
     const response = await fetch(form.action, {
-      method: "POST",
+      method: "post",
       body: data,
-      headers: { "Accept": "application/json" }
+      headers: { "accept": "application/json" }
     });
 
     if(response.ok){
       form.reset();
       wrapper.style.opacity = "0";
-      setTimeout(() => finalScreen.classList.add("show"), 1200);
+      settimeout(() => finalscreen.classlist.add("show"), 1200);
     } else {
-      submitBtn.disabled = false;
+      submitbtn.disabled = false;
     }
   } catch(e){
-    submitBtn.disabled = false;
+    submitbtn.disabled = false;
   }
 });
 </script>
