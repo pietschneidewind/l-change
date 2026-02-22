@@ -6,7 +6,6 @@
 <title>L’échange.</title>
 
 <style>
-
 /* ================= FONT ================= */
 @font-face {
   font-family: "Computer Says No";
@@ -16,21 +15,21 @@
 }
 
 /* ================= RESET ================= */
-* {
-  margin: 0;
-  padding: 0;
-  box-sizing: border-box;
-}
+* { margin: 0; padding: 0; box-sizing: border-box; }
 
 /* ================= VARIABLES ================= */
-:root {
+:root{
   --bg: #4b2f3a;
   --text: #c8e26a;
   --curtain: #000;
+
+  /* Timing */
+  --curtain-duration: 4s; /* (1) schneller als vorher */
+  --ease-heavy: cubic-bezier(.8,0,.2,1);
 }
 
 /* ================= BODY ================= */
-body {
+body{
   background: var(--bg);
   color: var(--text);
   font-family: "Computer Says No", monospace;
@@ -38,33 +37,68 @@ body {
   overflow: hidden;
 }
 
-/* ================= LAYOUT ================= */
-.container {
+/* ================= STAGE ================= */
+.stage{
+  position: relative;
+  height: 100vh;
+  width: 100%;
+}
+
+/* Center group (title + form) */
+.container{
+  position: absolute;
+  inset: 0;
   display: flex;
   flex-direction: column;
   align-items: center;
   justify-content: center;
-  height: 100vh;
   text-align: center;
   padding: 20px;
+  transition: opacity 1.2s ease;
+}
+
+.container.fade-out{
+  opacity: 0;
 }
 
 /* ================= TITLE ================= */
-h1 {
+h1{
   font-size: clamp(48px, 8vw, 120px);
   letter-spacing: 0.05em;
-  margin-bottom: 40px;
+  line-height: 1;
+  margin: 0;
+  transform: translateY(0) scale(1);
+  transition: transform 1.5s var(--ease-heavy);
+}
+
+/* (2) Title wandert nach oben, wenn Form kommt */
+.title-up{
+  transform: translateY(-110px) scale(0.78);
 }
 
 /* ================= FORM ================= */
-form {
+form{
   display: flex;
   flex-direction: column;
   gap: 12px;
   width: 280px;
+
+  /* Start: unsichtbar */
+  opacity: 0;
+  transform: translateY(18px);
+  pointer-events: none;
+  transition: opacity 1s ease, transform 1s ease;
+  margin-top: 22px;
 }
 
-input, textarea {
+/* Form sichtbar */
+form.show{
+  opacity: 1;
+  transform: translateY(0);
+  pointer-events: auto;
+}
+
+input, textarea{
   background: transparent;
   border: 1px solid var(--text);
   color: var(--text);
@@ -72,13 +106,12 @@ input, textarea {
   font-family: "Computer Says No", monospace;
 }
 
-input::placeholder,
-textarea::placeholder {
+input::placeholder, textarea::placeholder{
   color: var(--text);
   opacity: 0.7;
 }
 
-button {
+button{
   background: var(--text);
   color: var(--bg);
   border: none;
@@ -87,117 +120,167 @@ button {
   font-family: "Computer Says No", monospace;
 }
 
-/* ================= SUCCESS / ERROR ================= */
-.success, .error {
-  margin-top: 20px;
+/* ================= FINAL MESSAGE ================= */
+.final{
+  position: absolute;
+  inset: 0;
+  display: grid;
+  place-items: center;
+  text-align: center;
+  padding: 20px;
+
   opacity: 0;
-  transition: opacity 0.6s ease;
+  pointer-events: none;
+  transition: opacity 1.2s ease;
 }
 
-.success.show,
-.error.show {
+.final.show{
   opacity: 1;
+  pointer-events: auto;
+}
+
+.final p{
+  font-size: clamp(28px, 4vw, 64px);
+  letter-spacing: 0.04em;
+  line-height: 1.05;
 }
 
 /* ================= CURTAIN ================= */
-.curtain {
+.curtain{
   position: fixed;
   inset: 0;
   display: flex;
   z-index: 10;
-  pointer-events: none;
+  pointer-events: none; /* wichtig: blockiert keine Klicks */
 }
 
-.panel {
+.panel{
   width: 50%;
   height: 100%;
   background: var(--curtain);
-  transition: transform 10s cubic-bezier(.8,0,.2,1);
+  transition: transform var(--curtain-duration) var(--ease-heavy);
 }
 
-.left { transform-origin: left; }
-.right { transform-origin: right; }
+.left{ transform-origin: left; }
+.right{ transform-origin: right; }
 
-.open .left {
+.open .left{
   transform: perspective(1400px) rotateY(-110deg);
 }
 
-.open .right {
+.open .right{
   transform: perspective(1400px) rotateY(110deg);
 }
-
 </style>
 </head>
 
 <body>
+<div class="stage">
+  <!-- Main content -->
+  <div class="container" id="container">
+    <h1 id="title">L’échange.</h1>
 
-<div class="container">
-  <h1>L’échange.</h1>
+    <form id="contactForm" action="https://formspree.io/f/maqdpkgb" method="POST">
+      <input type="text" name="name" placeholder="Name" required>
+      <input type="tel" name="phone" placeholder="Phone" required>
+      <input type="email" name="email" placeholder="Mail" required>
+      <textarea name="drive" rows="4" placeholder="What drives you in life?" required></textarea>
+      <button type="submit" id="submitBtn">Send</button>
+    </form>
+  </div>
 
-  <form id="contactForm" action="https://formspree.io/f/maqdpkgb" method="POST">
-    <input type="text" name="name" placeholder="Name" required>
-    <input type="tel" name="phone" placeholder="Phone" required>
-    <input type="email" name="email" placeholder="Mail" required>
-    <textarea name="drive" rows="4" placeholder="What drives you in life?" required></textarea>
-    <button type="submit">Send</button>
-  </form>
+  <!-- Final state -->
+  <div class="final" id="final">
+    <p>See you at the table.</p>
+  </div>
 
-  <div class="success" id="successMessage">Merci.</div>
-  <div class="error" id="errorMessage">Something went wrong.</div>
-</div>
-
-<div class="curtain" id="curtain">
-  <div class="panel left"></div>
-  <div class="panel right"></div>
+  <!-- Curtain -->
+  <div class="curtain" id="curtain" aria-hidden="true">
+    <div class="panel left"></div>
+    <div class="panel right"></div>
+  </div>
 </div>
 
 <script>
+/**
+ * Timeline:
+ * 1) Curtain opens quickly
+ * 2) After open: only title is visible (form still hidden)
+ * 3) Then title moves up, then form appears
+ * 4) After successful submit: fade everything out, show final message
+ */
 
-/* ================= CURTAIN OPEN ================= */
+const curtain = document.getElementById("curtain");
+const title = document.getElementById("title");
+const form = document.getElementById("contactForm");
+const container = document.getElementById("container");
+const finalScreen = document.getElementById("final");
+
+const CURTAIN_START_DELAY = 250;                 // schneller Start
+const CURTAIN_DURATION_MS = 4000;                // muss zu --curtain-duration passen
+const AFTER_OPEN_PAUSE = 650;                    // (2) kurze Pause: nur Titel
+const TITLE_MOVE_DURATION_BUFFER = 1600;         // passend zur CSS transition (1.5s)
+const FORM_SHOW_DELAY_AFTER_TITLE = 200;         // kleine Ruhe nach Title-Move
+
 window.addEventListener("load", () => {
-  const curtain = document.getElementById("curtain");
-
+  // Start opening
   setTimeout(() => {
     curtain.classList.add("open");
-  }, 600);
+  }, CURTAIN_START_DELAY);
+
+  // When curtain is open, remove it (clean), but keep only title visible
+  const openCompleteAt = CURTAIN_START_DELAY + CURTAIN_DURATION_MS;
 
   setTimeout(() => {
+    // optional: curtain weg, damit es keine Layer mehr gibt
     curtain.remove();
-  }, 10600);
+
+    // (2) erst nur Titel, dann wandern, dann Form
+    setTimeout(() => {
+      title.classList.add("title-up");
+
+      setTimeout(() => {
+        form.classList.add("show");
+      }, TITLE_MOVE_DURATION_BUFFER + FORM_SHOW_DELAY_AFTER_TITLE);
+
+    }, AFTER_OPEN_PAUSE);
+
+  }, openCompleteAt + 120); // kleiner Puffer
 });
 
-/* ================= FORM HANDLING ================= */
-const form = document.getElementById("contactForm");
-const successMessage = document.getElementById("successMessage");
-const errorMessage = document.getElementById("errorMessage");
-
+// Form submit -> AJAX -> fade out -> final message
 form.addEventListener("submit", async (event) => {
   event.preventDefault();
 
-  successMessage.classList.remove("show");
-  errorMessage.classList.remove("show");
+  const submitBtn = document.getElementById("submitBtn");
+  submitBtn.disabled = true;
 
   try {
     const data = new FormData(form);
-
     const response = await fetch(form.action, {
       method: "POST",
       body: data,
       headers: { "Accept": "application/json" }
     });
 
-    if (response.ok) {
-      form.reset();
-      successMessage.classList.add("show");
-    } else {
-      errorMessage.classList.add("show");
+    if (!response.ok) {
+      submitBtn.disabled = false;
+      return;
     }
-  } catch (error) {
-    errorMessage.classList.add("show");
+
+    // (3) success: fade everything away
+    form.reset();
+    container.classList.add("fade-out");
+
+    // after fade, show final
+    setTimeout(() => {
+      finalScreen.classList.add("show");
+    }, 1200);
+
+  } catch (e) {
+    submitBtn.disabled = false;
   }
 });
-
 </script>
-
 </body>
 </html>
