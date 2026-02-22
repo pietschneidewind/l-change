@@ -1,71 +1,83 @@
 <!DOCTYPE html>
 <html lang="fr">
 <head>
-<meta charset="UTF-8" />
-<meta name="viewport" content="width=device-width, initial-scale=1.0" />
-<title>L’échange</title>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>L’échange.</title>
 
 <style>
 * { margin: 0; padding: 0; box-sizing: border-box; }
 
+:root {
+  --bg: #4b2f3a;
+  --text: #c8e26a;
+  --curtain: #000;
+}
+
 body {
-  background: #4b2f3a;
-  color: #c8e26a;
+  background: var(--bg);
+  color: var(--text);
   font-family: "Computer Says No", monospace;
   height: 100vh;
   overflow: hidden;
 }
 
+/* Main layout */
 .container {
   display: flex;
   flex-direction: column;
   align-items: center;
   justify-content: center;
   height: 100vh;
-  position: relative;
   text-align: center;
+  padding: 20px;
 }
 
 h1 {
   font-size: clamp(48px, 8vw, 120px);
   letter-spacing: 0.05em;
-  transition: all 1.5s ease;
+  margin-bottom: 40px;
 }
 
-.title-small {
-  transform: translateY(-60px) scale(0.7);
-}
-
-.form {
-  margin-top: 20px;
-  opacity: 0;
-  transform: translateY(30px);
-  transition: all 1s ease;
-}
-
-.form.show {
-  opacity: 1;
-  transform: translateY(0);
+/* Form styling */
+form {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  width: 280px;
 }
 
 input, textarea {
   background: transparent;
-  border: 1px solid #c8e26a;
-  color: #c8e26a;
+  border: 1px solid var(--text);
+  color: var(--text);
   padding: 10px;
-  margin: 8px 0;
-  width: 250px;
   font-family: inherit;
 }
 
+input::placeholder,
+textarea::placeholder {
+  color: var(--text);
+  opacity: 0.7;
+}
+
 button {
-  background: #c8e26a;
-  color: #4b2f3a;
+  background: var(--text);
+  color: var(--bg);
   border: none;
-  padding: 10px 20px;
+  padding: 10px;
   cursor: pointer;
-  margin-top: 10px;
   font-family: inherit;
+}
+
+.success {
+  margin-top: 20px;
+  opacity: 0;
+  transition: opacity 1s ease;
+}
+
+.success.show {
+  opacity: 1;
 }
 
 /* Curtain */
@@ -79,7 +91,7 @@ button {
 .panel {
   width: 50%;
   height: 100%;
-  background: black;
+  background: var(--curtain);
   transition: transform 10s cubic-bezier(.8,0,.2,1);
 }
 
@@ -99,13 +111,24 @@ button {
 <body>
 
 <div class="container">
-  <h1 id="title">L'échange</h1>
+  <h1>L’échange.</h1>
 
-  <div class="form" id="contactForm">
-    <input type="text" placeholder="Name"><br>
-    <input type="email" placeholder="Email"><br>
-    <textarea rows="4" placeholder="Message"></textarea><br>
-    <button>Send</button>
+  <form id="contactForm" action="https://formspree.io/f/maqdpkgb" method="POST">
+
+    <input type="text" name="name" placeholder="Name" required>
+
+    <input type="tel" name="phone" placeholder="Phone" required>
+
+    <input type="email" name="email" placeholder="Mail" required>
+
+    <textarea name="drive" rows="4" placeholder="What drives you in life?" required></textarea>
+
+    <button type="submit">Send</button>
+
+  </form>
+
+  <div class="success" id="successMessage">
+    Merci.
   </div>
 </div>
 
@@ -117,21 +140,32 @@ button {
 <script>
 window.addEventListener("load", () => {
 
-  // Curtain opens
+  // Curtain opens after slight pause
   setTimeout(() => {
     document.getElementById("curtain").classList.add("open");
   }, 600);
 
-  // After curtain fully open
-  setTimeout(() => {
-    document.getElementById("title").classList.add("title-small");
-  }, 11500);
+});
 
-  // Show form
-  setTimeout(() => {
-    document.getElementById("contactForm").classList.add("show");
-  }, 13000);
+// Handle form submit without page reload
+const form = document.getElementById("contactForm");
+const successMessage = document.getElementById("successMessage");
 
+form.addEventListener("submit", async function(event) {
+  event.preventDefault();
+
+  const data = new FormData(form);
+
+  const response = await fetch(form.action, {
+    method: form.method,
+    body: data,
+    headers: { 'Accept': 'application/json' }
+  });
+
+  if (response.ok) {
+    form.reset();
+    successMessage.classList.add("show");
+  }
 });
 </script>
 
