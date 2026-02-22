@@ -24,7 +24,7 @@
   --curtain: #000;
 
   /* Timing */
-  --curtain-duration: 4s; /* (1) schneller als vorher */
+  --curtain-duration: 4s;
   --ease-heavy: cubic-bezier(.8,0,.2,1);
 }
 
@@ -44,14 +44,18 @@ body{
   width: 100%;
 }
 
-/* Center group (title + form) */
+/* Main content block */
 .container{
   position: absolute;
   inset: 0;
   display: flex;
   flex-direction: column;
   align-items: center;
+
+  /* (1) echte optische Mitte: leicht nach oben schieben */
   justify-content: center;
+  transform: translateY(-1.5vh);
+
   text-align: center;
   padding: 20px;
   transition: opacity 1.2s ease;
@@ -67,31 +71,34 @@ h1{
   letter-spacing: 0.05em;
   line-height: 1;
   margin: 0;
+
   transform: translateY(0) scale(1);
   transition: transform 1.5s var(--ease-heavy);
 }
 
-/* (2) Title wandert nach oben, wenn Form kommt */
+/* (2) Title wandert hoch, Form kommt */
 .title-up{
-  transform: translateY(-110px) scale(0.78);
+  transform: translateY(-90px) scale(0.78);
 }
 
 /* ================= FORM ================= */
 form{
   display: flex;
   flex-direction: column;
-  gap: 12px;
-  width: 280px;
 
-  /* Start: unsichtbar */
+  /* (2) weniger Abstand */
+  gap: 12px;
+  margin-top: 12px; /* war zu groß */
+
+  /* (3) iPhone: volle Breite, aber mit gutem Rand */
+  width: min(560px, calc(100vw - 48px));
+
   opacity: 0;
-  transform: translateY(18px);
+  transform: translateY(16px);
   pointer-events: none;
   transition: opacity 1s ease, transform 1s ease;
-  margin-top: 22px;
 }
 
-/* Form sichtbar */
 form.show{
   opacity: 1;
   transform: translateY(0);
@@ -99,11 +106,23 @@ form.show{
 }
 
 input, textarea{
+  width: 100%;
   background: transparent;
   border: 1px solid var(--text);
   color: var(--text);
-  padding: 10px;
+  padding: 12px 12px;
   font-family: "Computer Says No", monospace;
+  font-size: 18px;
+  line-height: 1.2;
+}
+
+/* iOS Zoom vermeiden: mind. 16px Font */
+input, textarea, button{
+  font-size: 18px;
+}
+
+textarea{
+  resize: none;
 }
 
 input::placeholder, textarea::placeholder{
@@ -112,10 +131,11 @@ input::placeholder, textarea::placeholder{
 }
 
 button{
+  width: 100%;
   background: var(--text);
   color: var(--bg);
   border: none;
-  padding: 10px;
+  padding: 12px;
   cursor: pointer;
   font-family: "Computer Says No", monospace;
 }
@@ -151,7 +171,7 @@ button{
   inset: 0;
   display: flex;
   z-index: 10;
-  pointer-events: none; /* wichtig: blockiert keine Klicks */
+  pointer-events: none;
 }
 
 .panel{
@@ -164,19 +184,14 @@ button{
 .left{ transform-origin: left; }
 .right{ transform-origin: right; }
 
-.open .left{
-  transform: perspective(1400px) rotateY(-110deg);
-}
-
-.open .right{
-  transform: perspective(1400px) rotateY(110deg);
-}
+.open .left{ transform: perspective(1400px) rotateY(-110deg); }
+.open .right{ transform: perspective(1400px) rotateY(110deg); }
 </style>
 </head>
 
 <body>
 <div class="stage">
-  <!-- Main content -->
+
   <div class="container" id="container">
     <h1 id="title">L’échange.</h1>
 
@@ -189,53 +204,40 @@ button{
     </form>
   </div>
 
-  <!-- Final state -->
   <div class="final" id="final">
     <p>See you at the table.</p>
   </div>
 
-  <!-- Curtain -->
   <div class="curtain" id="curtain" aria-hidden="true">
     <div class="panel left"></div>
     <div class="panel right"></div>
   </div>
+
 </div>
 
 <script>
-/**
- * Timeline:
- * 1) Curtain opens quickly
- * 2) After open: only title is visible (form still hidden)
- * 3) Then title moves up, then form appears
- * 4) After successful submit: fade everything out, show final message
- */
-
 const curtain = document.getElementById("curtain");
 const title = document.getElementById("title");
 const form = document.getElementById("contactForm");
 const container = document.getElementById("container");
 const finalScreen = document.getElementById("final");
 
-const CURTAIN_START_DELAY = 250;                 // schneller Start
-const CURTAIN_DURATION_MS = 4000;                // muss zu --curtain-duration passen
-const AFTER_OPEN_PAUSE = 650;                    // (2) kurze Pause: nur Titel
-const TITLE_MOVE_DURATION_BUFFER = 1600;         // passend zur CSS transition (1.5s)
-const FORM_SHOW_DELAY_AFTER_TITLE = 200;         // kleine Ruhe nach Title-Move
+const CURTAIN_START_DELAY = 250;
+const CURTAIN_DURATION_MS = 4000; // muss zu --curtain-duration passen
+const AFTER_OPEN_PAUSE = 650;
+const TITLE_MOVE_DURATION_BUFFER = 1600; // CSS 1.5s + Puffer
+const FORM_SHOW_DELAY_AFTER_TITLE = 120;
 
 window.addEventListener("load", () => {
-  // Start opening
   setTimeout(() => {
     curtain.classList.add("open");
   }, CURTAIN_START_DELAY);
 
-  // When curtain is open, remove it (clean), but keep only title visible
   const openCompleteAt = CURTAIN_START_DELAY + CURTAIN_DURATION_MS;
 
   setTimeout(() => {
-    // optional: curtain weg, damit es keine Layer mehr gibt
     curtain.remove();
 
-    // (2) erst nur Titel, dann wandern, dann Form
     setTimeout(() => {
       title.classList.add("title-up");
 
@@ -245,13 +247,11 @@ window.addEventListener("load", () => {
 
     }, AFTER_OPEN_PAUSE);
 
-  }, openCompleteAt + 120); // kleiner Puffer
+  }, openCompleteAt + 120);
 });
 
-// Form submit -> AJAX -> fade out -> final message
 form.addEventListener("submit", async (event) => {
   event.preventDefault();
-
   const submitBtn = document.getElementById("submitBtn");
   submitBtn.disabled = true;
 
@@ -268,11 +268,9 @@ form.addEventListener("submit", async (event) => {
       return;
     }
 
-    // (3) success: fade everything away
     form.reset();
     container.classList.add("fade-out");
 
-    // after fade, show final
     setTimeout(() => {
       finalScreen.classList.add("show");
     }, 1200);
