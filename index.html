@@ -1,17 +1,17 @@
 <!DOCTYPE html>
 <html lang="fr">
 <head>
-<meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
 <title>L’échange.</title>
 
 <style>
-@font-face {
+@font-face{
   font-family: "Computer Says No";
   src: url("computer-says-no.otf") format("opentype");
 }
 
-* { margin:0; padding:0; box-sizing:border-box; }
+*{margin:0;padding:0;box-sizing:border-box;}
 
 :root{
   --text:#c8e26a;
@@ -19,69 +19,72 @@
   --ease:cubic-bezier(.8,0,.2,1);
 }
 
-/* ================= BODY ================= */
+/* ===== Base ===== */
+html, body { height:100%; }
 body{
   font-family:"Computer Says No", monospace;
-  height:100vh;
-  overflow:hidden;
   color:var(--text);
-  background:#000; /* fallback */
+  overflow:hidden;
+  background:#000;
 }
 
-/* ================= BACKGROUND ================= */
+/* ===== Background (never blocks taps) ===== */
 .background{
   position:fixed;
   inset:0;
   z-index:0;
-  pointer-events:none; /* ✅ SUPER WICHTIG: blockiert keine Klicks */
+  pointer-events:none;
   background:
     linear-gradient(rgba(0,0,0,0.55), rgba(0,0,0,0.55)),
-    url("img-6126.jpg") center center / cover no-repeat;
+    url("img-6126.jpg") center / cover no-repeat;
 }
 
-/* ================= WRAPPER ================= */
-.wrapper{
-  position:absolute;
-  top:50%;
-  left:50%;
-  transform:translate(-50%,-50%);
-  display:flex;
-  flex-direction:column;
-  align-items:center;
-  width:min(560px, calc(100vw - 48px));
+/* ===== Stage centered WITHOUT transform (iOS-safe) ===== */
+.stage{
+  position:relative;
   z-index:2;
+  height:100%;
+  display:grid;
+  place-items:center;
+  padding:24px;
+}
+
+/* Wrapper content */
+.wrapper{
+  width:min(560px, calc(100vw - 48px));
+  text-align:center;
   transition:opacity 1.2s ease;
 }
 
-/* ================= TITLE ================= */
+/* Title */
 h1{
   font-size:clamp(64px, 10vw, 160px);
-  margin-bottom:20px;
   letter-spacing:0.05em;
+  margin-bottom:20px;
   transition:transform 1.6s var(--ease);
 }
 
+/* Drift up */
 .title-up{
-  transform:translateY(-40px);
+  transform: translateY(-40px);
 }
 
-/* ================= FORM ================= */
+/* Form */
 form{
+  width:100%;
   display:flex;
   flex-direction:column;
   gap:12px;
-  width:100%;
+
   opacity:0;
   transform:translateY(10px);
+  pointer-events:none;
   transition:opacity 1s ease, transform 1s ease;
-
-  pointer-events:none; /* ✅ solange verborgen */
 }
-
 form.show{
   opacity:1;
   transform:translateY(0);
-  pointer-events:auto; /* ✅ sobald sichtbar */
+  pointer-events:auto;
 }
 
 input, textarea{
@@ -90,60 +93,61 @@ input, textarea{
   border:1px solid var(--text);
   color:var(--text);
   padding:14px;
-  font-size:18px; /* iOS zoom vermeiden */
   font-family:"Computer Says No", monospace;
+  font-size:18px; /* iOS zoom vermeiden */
+  line-height:1.2;
 }
-
 textarea{ resize:none; }
 
 button{
   width:100%;
   background:var(--text);
-  color:black;
+  color:#000;
   border:none;
   padding:14px;
-  font-size:18px;
   font-family:"Computer Says No", monospace;
+  font-size:18px;
   cursor:pointer;
 }
 
-/* ================= FINAL ================= */
+/* Final screen */
 .final{
-  position:absolute;
+  position:fixed;
   inset:0;
+  z-index:3;
   display:grid;
   place-items:center;
+  text-align:center;
+  padding:24px;
   opacity:0;
+  pointer-events:none;
   transition:opacity 1.2s ease;
-  z-index:2;
 }
-
-.final.show{ opacity:1; }
-
+.final.show{
+  opacity:1;
+  pointer-events:auto;
+}
 .final p{
   font-size:clamp(32px,6vw,80px);
   letter-spacing:0.04em;
 }
 
-/* ================= CURTAIN ================= */
+/* Curtain */
 .curtain{
   position:fixed;
   inset:0;
-  display:flex;
   z-index:10;
+  display:flex;
   pointer-events:none;
 }
-
 .panel{
   width:50%;
   height:100%;
   background:var(--curtain);
   transition:transform 3.5s var(--ease);
 }
-
 .left{transform-origin:left;}
 .right{transform-origin:right;}
-
 .open .left{transform:perspective(1400px) rotateY(-110deg);}
 .open .right{transform:perspective(1400px) rotateY(110deg);}
 </style>
@@ -153,16 +157,18 @@ button{
 
 <div class="background" aria-hidden="true"></div>
 
-<div class="wrapper" id="wrapper">
-  <h1 id="title">L’échange.</h1>
+<div class="stage">
+  <div class="wrapper" id="wrapper">
+    <h1 id="title">L’échange.</h1>
 
-  <form id="contactForm" action="https://formspree.io/f/maqdpkgb" method="POST">
-    <input type="text" name="name" placeholder="Name" required>
-    <input type="tel" name="phone" placeholder="Phone" required>
-    <input type="email" name="email" placeholder="Mail" required>
-    <textarea name="drive" rows="4" placeholder="What drives you in life?" required></textarea>
-    <button type="submit">Send</button>
-  </form>
+    <form id="contactForm" action="https://formspree.io/f/maqdpkgb" method="POST">
+      <input type="text" name="name" placeholder="Name" required>
+      <input type="tel" name="phone" placeholder="Phone" required>
+      <input type="email" name="email" placeholder="Mail" required>
+      <textarea name="drive" rows="4" placeholder="What drives you in life?" required></textarea>
+      <button type="submit" id="submitBtn">Send</button>
+    </form>
+  </div>
 </div>
 
 <div class="final" id="final">
@@ -180,6 +186,7 @@ const title = document.getElementById("title");
 const form = document.getElementById("contactForm");
 const wrapper = document.getElementById("wrapper");
 const finalScreen = document.getElementById("final");
+const submitBtn = document.getElementById("submitBtn");
 
 window.addEventListener("load", () => {
   setTimeout(() => curtain.classList.add("open"), 200);
@@ -188,8 +195,10 @@ window.addEventListener("load", () => {
     curtain.remove();
 
     setTimeout(() => {
+      // Titel driftet hoch
       title.classList.add("title-up");
 
+      // dann Formular
       setTimeout(() => {
         form.classList.add("show");
       }, 800);
@@ -201,21 +210,25 @@ window.addEventListener("load", () => {
 
 form.addEventListener("submit", async (event) => {
   event.preventDefault();
+  submitBtn.disabled = true;
 
-  const data = new FormData(form);
-  const response = await fetch(form.action, {
-    method:"POST",
-    body:data,
-    headers:{ "Accept":"application/json" }
-  });
+  try{
+    const data = new FormData(form);
+    const response = await fetch(form.action, {
+      method: "POST",
+      body: data,
+      headers: { "Accept": "application/json" }
+    });
 
-  if(response.ok){
-    form.reset();
-    wrapper.style.opacity = "0";
-
-    setTimeout(()=>{
-      finalScreen.classList.add("show");
-    },1200);
+    if(response.ok){
+      form.reset();
+      wrapper.style.opacity = "0";
+      setTimeout(() => finalScreen.classList.add("show"), 1200);
+    } else {
+      submitBtn.disabled = false;
+    }
+  } catch(e){
+    submitBtn.disabled = false;
   }
 });
 </script>
